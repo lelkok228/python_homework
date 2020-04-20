@@ -2,13 +2,30 @@ import json
 import sys
 
 
+def read_s(in_file):
+    res = ''
+    if in_file == 'console':
+        for line in sys.stdin:
+            res += line
+    else:
+        with open(in_file, 'r') as in_:
+            res = in_.read()
+    return res
+
+
+def write_s(s, out_file):
+    if out_file == 'console':
+        print(s)
+    else:
+        with open(out_file, 'w') as out_:
+            out_.write(s)
+
+
 def encode_caesar(key, in_file, out_file):
     global alphabet
-    
-    s = ''
-    with open(in_file, 'r') as in_:
-        s = in_.read()
-    
+
+    s = read_s(in_file)
+
     res = ''
     for i in s:
         if i in alphabet:
@@ -18,15 +35,13 @@ def encode_caesar(key, in_file, out_file):
         else:
             res += i
 
-    with open(out_file, 'w') as out_:
-        out_.write(res)
+    write_s(res, out_file)
+
 
 def decode_caesar(key, in_file, out_file):
     global alphabet
 
-    s = ''
-    with open(in_file, 'r') as in_:
-        s = in_.read()
+    s = read_s(in_file)
 
     res = ''
     for i in s:
@@ -37,16 +52,14 @@ def decode_caesar(key, in_file, out_file):
         else:
             res += i
 
-    with open(out_file, 'w') as out_:
-        out_.write(res)
+    write_s(res, out_file)
+
 
 def encode_vigenere(key, in_file, out_file):
     global alphabet
 
     key = key.lower()
-    s = ''
-    with open(in_file, 'r') as in_:
-        s = in_.read()
+    s = read_s(in_file)
 
     res = ''
     for i in range(len(s)):
@@ -57,16 +70,14 @@ def encode_vigenere(key, in_file, out_file):
         else:
             res += s[i]
 
-    with open(out_file, 'w') as out_:
-        out_.write(res)
+    write_s(res, out_file)
+
 
 def decode_vigenere(key, in_file, out_file):
     global alphabet
 
     key = key.lower()
-    s = ''
-    with open(in_file, 'r') as in_:
-        s = in_.read()
+    s = read_s(in_file)
 
     res = ''
     for i in range(len(s)):
@@ -77,36 +88,36 @@ def decode_vigenere(key, in_file, out_file):
         else:
             res += s[i]
 
-    with open(out_file, 'w') as out_:
-        out_.write(res)
+    write_s(res, out_file)
+
 
 def count_frequency(in_file, out_file):
     global alphabet
-    
-    s = ''
-    with open(in_file, 'r') as in_:
-        s = in_.read()
+
+    s = read_s(in_file)
     s = s.lower()
-    
+
     number_of_letters = sum(s.count(i) for i in alphabet)
     frequency = {}
+
     for i in alphabet:
-        frequency[i] = s.count(i) / number_of_letters
- 
-    with open(out_file, 'w') as out_:
-        out_.write(json.dumps(frequency))
+        if number_of_letters != 0:
+            frequency[i] = s.count(i) / number_of_letters
+        else:
+            frequency[i] = 0
+
+    write_s(json.dumps(frequency), out_file)
+
 
 def hack(in_file, out_file, frequency_file):
     global alphabet
 
-    s = ''
-    with open(in_file, 'r') as in_:
-        s = in_.read()
+    s = read_s(in_file)
 
     number_of_letters = 0
     ind_of_upper = []
     for i in range(len(s)):
-        if s[i] in alphabet:
+        if s[i].lower() in alphabet:
             number_of_letters += 1
         if s[i].isupper():
             ind_of_upper.append(i)
@@ -114,46 +125,45 @@ def hack(in_file, out_file, frequency_file):
 
     with open(frequency_file, 'r') as freq_file:
         freq = json.load(freq_file)
-    
+
     dist = [0] * len(alphabet)
     for shift in range(len(alphabet)):
-        newS = ''
+        new_s = ''
         for i in s:
             if i in alphabet:
-                newS += alphabet[(alphabet.index(i) + shift) % len(alphabet)]
+                new_s += alphabet[(alphabet.index(i) + shift) % len(alphabet)]
             else:
-                newS += i
-        dist.append(0)
+                new_s += i
+
         for i in alphabet:
-            dist[shift] += (freq[i] - newS.count(i) / number_of_letters) ** 2
+            if number_of_letters != 0:
+                dist[shift] += (freq[i] - new_s.count(i) / number_of_letters) ** 2
 
     res_shift = dist.index(min(dist))
-    res_s = ''
+    res = ''
     for i in range(len(s)):
         if s[i] in alphabet:
-            if i in ind_of_upper: 
-                res_s += alphabet[(alphabet.index(s[i]) + res_shift) % len(alphabet)].upper()
+            if i in ind_of_upper:
+                res += alphabet[(alphabet.index(s[i]) + res_shift) % len(alphabet)].upper()
             else:
-                res_s += alphaber[(alphabet.index(s[i]) + res_shift) % len(alphabet)].upper()
+                res += alphabet[(alphabet.index(s[i]) + res_shift) % len(alphabet)]
         else:
-            res_s += s[i]
+            res += s[i]
 
-    with open(out_file, 'w') as out_:
-        out_.write(res_s)
-        
+    write_s(res, out_file)
+
 
 if __name__ == '__main__':
     alphabet = []
     for i in range(ord('a'), ord('z') + 1):
-        alphabet.append(chr(i))    
-    
+        alphabet.append(chr(i))
+
     if sys.argv[1] == 'encode':
         if sys.argv[2] == 'caesar':
             encode_caesar(int(sys.argv[3]), sys.argv[4], sys.argv[5])
         elif sys.argv[2] == 'vigenere':
             encode_vigenere(sys.argv[3], sys.argv[4], sys.argv[5])
 
-    
     if sys.argv[1] == 'decode':
         if sys.argv[2] == 'caesar':
             decode_caesar(int(sys.argv[3]), sys.argv[4], sys.argv[5])
