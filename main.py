@@ -116,8 +116,8 @@ def get_frequency(line):
 def get_index_of_upper(line):
     index_of_upper = []
     for i in range(len(line)):
-    	if line[i].isupper():
-    		index_of_upper.append(i)
+        if line[i].isupper():
+            index_of_upper.append(i)
     return index_of_upper
 
 
@@ -138,7 +138,7 @@ def hack(line, frequency):
     res_shift = dist.index(min(dist))
     res_line = encode_caesar(line, res_shift)
     for i in index_of_upper:
-    	res_line = res_line[:i] + res_line[i].upper() + res_line[i + 1:]
+        res_line = res_line[:i] + res_line[i].upper() + res_line[i + 1:]
 
     return res_line
 
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     parser.add_argument('--cipher')
     parser.add_argument('--key')
     parser.add_argument('--frequency_file')
-    args = parser.parse_args()  
+    args = parser.parse_args()
 
     input_string = read_string(args.input_file)
     if args.frequency_file:
@@ -170,7 +170,7 @@ if __name__ == '__main__':
             write_string(decode_vigenere(input_string, args.key), args.output_file)
 
     if args.mode == 'frequency':
-    	write_string(json.dumps(get_frequency(input_string)), args.output_file)
+        write_string(json.dumps(get_frequency(input_string)), args.output_file)
 
     if args.mode == 'hack':
-    	write_string(hack(input_string, frequency), args.output_file)
+        write_string(hack(input_string, frequency), args.output_file)
