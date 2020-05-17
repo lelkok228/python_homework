@@ -6,4 +6,7 @@
 3)python3 main.py frequency --input_file=input.txt --output_file=output.json\
 4)python3 main.py hack --input_file=input.txt --output_file=output.txt --frequency_file=frequency.json\
 \
-Также есть возможность использовать консоль для ввода или вывода текста, для этого следует не указывать input_file или output_file соответственно. 
+Также есть возможность использовать консоль для ввода или вывода текста, для этого следует не указывать input_file или output_file соответственно.\
+Добавлена возможность использовать буквы русского алфавита, цифры, пробелы и знаки препинания.\
+Теперь исходный алфавит имеет следующий вид `abcdefghijklmnopqrstuvwxyzабвгдежзийклмнопрстуфхцчшщъыьэюя0123456789 !?.,:;-"{}()[]<>`.
+
