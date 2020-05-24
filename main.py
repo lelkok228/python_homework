@@ -29,7 +29,9 @@ def read_frequency(frequency_file):
 
 
 def get_alphabet():
-    alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)]
+    alphabet = [chr(i) for i in range(ord('a'), ord('z') + 1)] + [chr(i) for i in range(ord('а'), ord('я') + 1)]
+    alphabet += [chr(i) for i in range(ord('0'), ord('9') + 1)] + [' ', '!', '?', '.', ',', ':', ';', '-', '"']
+    alphabet += ['{', '}', '(', ')', '[', ']', '<', '>']
     return alphabet
 
 
@@ -37,13 +39,13 @@ def encode_caesar(line, key):
     alphabet = get_alphabet()
     res = ''
 
-    for letter in line:
-        if letter in alphabet:
-            res += alphabet[(alphabet.index(letter) + key) % len(alphabet)]
-        elif letter.lower() in alphabet:
-            res += alphabet[(alphabet.index(letter.lower()) + key) % len(alphabet)].upper()
+    for symbol in line:
+        if symbol in alphabet:
+            res += alphabet[(alphabet.index(symbol) + key) % len(alphabet)]
+        elif symbol.lower() in alphabet:
+            res += alphabet[(alphabet.index(symbol.lower()) + key) % len(alphabet)].upper()
         else:
-            res += letter
+            res += symbol
 
     return res
 
@@ -52,13 +54,13 @@ def decode_caesar(line, key):
     alphabet = get_alphabet()
 
     res = ''
-    for letter in line:
-        if letter in alphabet:
-            res += alphabet[(alphabet.index(letter) - key) % len(alphabet)]
-        elif letter.lower() in alphabet:
-            res += alphabet[(alphabet.index(letter.lower()) - key) % len(alphabet)].upper()
+    for symbol in line:
+        if symbol in alphabet:
+            res += alphabet[(alphabet.index(symbol) - key) % len(alphabet)]
+        elif symbol.lower() in alphabet:
+            res += alphabet[(alphabet.index(symbol.lower()) - key) % len(alphabet)].upper()
         else:
-            res += letter
+            res += symbol
 
     return res
 
@@ -101,14 +103,14 @@ def get_frequency(line):
     alphabet = get_alphabet()
     line = line.lower()
 
-    number_of_letters = sum(line.count(letter) for letter in alphabet)
+    number_of_symbols = sum(line.count(symbol) for symbol in alphabet)
     frequency = {}
 
-    for letter in alphabet:
-        if number_of_letters != 0:
-            frequency[letter] = line.count(letter) / number_of_letters
+    for symbol in alphabet:
+        if number_of_symbols != 0:
+            frequency[symbol] = line.count(symbol) / number_of_symbols
         else:
-            frequency[letter] = 0
+            frequency[symbol] = 0
 
     return frequency
 
@@ -125,15 +127,15 @@ def hack(line, frequency):
     alphabet = get_alphabet()
     index_of_upper = get_index_of_upper(line)
     line = line.lower()
-    number_of_letters = sum(line.count(letter) for letter in alphabet)
+    number_of_symbols = sum(line.count(symbol) for symbol in alphabet)
 
     dist = [0] * len(alphabet)
     for shift in range(len(alphabet)):
         new_line = encode_caesar(line, shift)
 
-        for letter in alphabet:
-            if number_of_letters != 0:
-                dist[shift] += (frequency[letter] - new_line.count(letter) / number_of_letters) ** 2
+        for symbol in alphabet:
+            if number_of_symbols != 0:
+                dist[shift] += (frequency[symbol] - new_line.count(symbol) / number_of_symbols) ** 2
 
     res_shift = dist.index(min(dist))
     res_line = encode_caesar(line, res_shift)
